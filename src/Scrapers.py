@@ -1,6 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+
+# Path to ChromeDriver executable
+webdriver_path = "/home/meth/chromedriver/stable/chromedriver"
+
 class CurrencyScraper:
 	def __init__(self, url=""):
 		self.url = url
@@ -54,3 +61,27 @@ class SeylanBankScraper(CurrencyScraper):
 			cells = row.find_all("td")
 			first_three = [cell.text.strip() for cell in cells[1:4]]
 			self.raw_data.append(first_three)
+
+class SampathBankScraper(CurrencyScraper):
+	def __init__(self, url=""):
+		super().__init__("https://www.sampath.lk/rates-and-charges?activeTab=exchange-rates")
+		self.__initialize_selenium()
+		
+		# Navigate to webpage
+		self.s_driver.get(self.url)
+
+	def __initialize_selenium(self):
+		self.s_service = Service(webdriver_path)
+		self.s_options = webdriver.ChromeOptions()
+		self.s_options.add_argument("--headless")
+		self.s_driver = webdriver.Chrome(service=self.s_service, options=self.s_options)
+	
+	def scrape(self):
+		the_table = self.s_driver.find_element(By.ID, "__BVID__413")
+		rows = the_table.find_elements(By.TAG_NAME, "tbody")
+
+		for row in rows:
+			cell_row = row.find_element(By.TAG_NAME, "tr")
+			cells = cell_row.find_elements(By.TAG_NAME, "td")
+			text = [cell.get_attribute("innerHTML").strip() for cell in cells]
+			print(text)
