@@ -7,6 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
+from Standardize import convertToISO4217
+
 # Path to ChromeDriver executable
 webdriver_path = "/home/meth/chromedriver/stable/chromedriver"
 
@@ -54,6 +56,7 @@ class CommBankScraper(CurrencyScraper):
 		for row in rows:
 			cells = row.find_all("td")
 			first_three_columns = [cell.text.strip() for cell in cells[:3]]
+			first_three_columns[0] = convertToISO4217(first_three_columns[0])
 			self.raw_data.append(first_three_columns)
 
 class SeylanBankScraper(CurrencyScraper):
