@@ -1,4 +1,7 @@
 from Scrapers import *
 
-sbs = SampathBankScraper()
-sbs.scrape()
+scrapers = [SampathBankScraper(), CommBankScraper(), SeylanBankScraper()]
+
+for scraper in scrapers:
+		scraper.scrape()
+		scraper.debug_out()
